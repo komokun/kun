@@ -48,7 +48,8 @@ defmodule Kun.MixProject do
       {:argon2_elixir, "~> 1.2"},
       {:poolboy, "~> 1.5"},
       {:poison, "~> 3.1"},
-      {:cors_plug, "~> 1.4"}
+      {:cors_plug, "~> 1.4"},
+      {:ex_machina, "~> 2.0", only: [:test, :local]}
     ]
   end
 
