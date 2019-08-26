@@ -1,5 +1,5 @@
-defmodule KunWeb.LoginChannelTest do
-  use KunWeb.ChannelCase #,async: true
+defmodule KunWeb.RailChannelTest do
+  use KunWeb.ChannelCase
   alias KunWeb.UserSocket
 
   alias Kun.UserManager
@@ -13,7 +13,7 @@ defmodule KunWeb.LoginChannelTest do
 
     {:ok, _reply, socket} = subscribe_and_join(
       socket,
-      KunWeb.LoginChannel,
+      KunWeb.RailChannel,
       "login:"<> Integer.to_string(user.id),
       %{"name" => user.name})
 
@@ -24,28 +24,9 @@ defmodule KunWeb.LoginChannelTest do
     {:ok, socket: socket, user: user, token: token }
   end
 
-  test "ping replies with status ok", %{socket: socket} do
-    ref = push socket, "ping", %{"hello" => "there"}
-    assert_reply ref, :ok, %{message: "pong"}
-  end
-
-  test "logout ", %{socket: socket, token: token} do
-    #Process.unlink(socket.channel_pid)
-    #Logger.warn("#{inspect token}")
-    push socket, "logout", %{ "guardian_token" => token }
-    #assert_received(:exit)
-  end
-
-  test "broadcasts are pushed to the client", %{socket: socket} do
-    broadcast_from! socket, "broadcast", %{"some" => "data"}
-    assert_push "broadcast", %{"some" => "data"}
-  end
-
   @create_attrs %{name: "some name", email: "some@email", password: "password"}
   defp create_user(_) do
     {:ok, user} = UserManager.create_user(@create_attrs)
     user
   end
-
 end
-

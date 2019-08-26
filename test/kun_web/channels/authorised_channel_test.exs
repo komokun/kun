@@ -1,20 +1,15 @@
 defmodule KunserverWeb.AuthorizedChannelTest do
-  # Elixir warns about a bunch of unused variables even though they are used
-  @compile :nowarn_unused_vars
-  require Logger
   use KunWeb.ChannelCase
-
   alias KunWeb.UserSocket
 
   alias Kun.UserManager
-  alias Kun.UserManager.Guardian
 
-  @create_attrs %{name: "some name", email: "some@email", password: "some password"}
+  require Logger
 
   setup do
 
     user = create_user("")
-    {:ok, token, full_claims} = Guardian.encode_and_sign(user)
+    {:ok, token, full_claims} = Kun.UserManager.Guardian.encode_and_sign(user)
 
     {:ok, socket} = connect(UserSocket, %{"token" => token})
 
@@ -37,6 +32,7 @@ defmodule KunserverWeb.AuthorizedChannelTest do
     assert_reply ref, :ok, %{message: "pong"}
   end
 
+  @create_attrs %{name: "some name", email: "some@email", password: "some password"}
   defp create_user(_) do
     {:ok, user} = UserManager.create_user(@create_attrs)
     user
