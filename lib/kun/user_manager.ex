@@ -51,7 +51,7 @@ defmodule Kun.UserManager do
 
     case check_password(user, password) do
       true -> {:ok, user}
-      _ -> :error
+      _ -> {:error, "Failed to authenticate."}
     end
   end
 

@@ -3,10 +3,13 @@
               {description,"Elixir Authentication framework"},
               {modules,['Elixir.Guardian','Elixir.Guardian.Config',
                         'Elixir.Guardian.MalformedReturnValueError',
-                        'Elixir.Guardian.Permissions.Bitwise',
-                        'Elixir.Guardian.Permissions.Bitwise.PermissionNotFoundError',
-                        'Elixir.Guardian.Permissions.Bitwise.PlugImpl',
-                        'Elixir.Guardian.Phoenix.Socket',
+                        'Elixir.Guardian.Permissions',
+                        'Elixir.Guardian.Permissions.AtomEncoding',
+                        'Elixir.Guardian.Permissions.BitwiseEncoding',
+                        'Elixir.Guardian.Permissions.PermissionEncoding',
+                        'Elixir.Guardian.Permissions.PermissionNotFoundError',
+                        'Elixir.Guardian.Permissions.Plug',
+                        'Elixir.Guardian.Permissions.TextEncoding',
                         'Elixir.Guardian.Plug',
                         'Elixir.Guardian.Plug.EnsureAuthenticated',
                         'Elixir.Guardian.Plug.EnsureNotAuthenticated',
@@ -25,4 +28,4 @@
                         'Elixir.Guardian.Token.Verify','Elixir.Guardian.UUID',
                         'Elixir.Mix.Tasks.Guardian.Gen.Secret']},
               {registered,[]},
-              {vsn,"1.2.1"}]}.
+              {vsn,"2.0.0"}]}.

@@ -25,24 +25,21 @@ defmodule KunWeb.UserSocket do
   def connect(%{"email" => email,
                 "password" => password } , socket) do
     # Verify login - find user in the DB
-    case Kun.UserManager.authenticate(email, password) do
-      {:ok, user} ->
-        process_auth_resp(user, "", socket)
-      {:error} -> :error
-    end
-    #|> process_auth_resp(sUID , socket)
-    # TODO have users/permissions stored in K/V store
+    Kun.UserManager.authenticate(email, password)
+    |> process_auth_resp(socket)
   end
 
   @doc """
   Connect with existing JWT token
   """
+
   def connect(%{"token" => token}, socket) do
-    case Guardian.Phoenix.Socket.authenticate(socket, Kun.UserManager.Guardian, token) do
-      {:ok, authed_socket} ->
-        {:ok, authed_socket}
+
+    case Kun.UserManager.Guardian.decode_and_verify(token) do
+      {:ok, _} ->
+        {:ok, socket}
       {:error, _} -> :error
-	  end
+    end
   end
 
   # This function will be called when there was no authentication information
@@ -50,30 +47,21 @@ defmodule KunWeb.UserSocket do
     :error
   end
 
-  defp process_auth_resp(%{ permissions: nil } = _user, sUID, socket) do
-    Logger.info "Can't authenticate user! #{inspect sUID} -> no permissions!"
-    {:ok, socket
-    |> assign(:user_id, 0)
-    |> assign(:login_error, sUID)}
-  end
-
-  defp process_auth_resp(%{ id: _id, name: _name } = user, _sUID, socket) do
-    Logger.warn "Found user:  #{inspect user}"
-    {:ok, jwt, claims} = Kun.UserManager.Guardian.encode_and_sign(user)
+  defp process_auth_resp({:ok, user}, socket) do
+    #Logger.warn "Found user:  #{inspect user}"
+    {:ok, token, _} = Kun.UserManager.Guardian.encode_and_sign(user)
     # Logger.warn "Claims :  #{inspect claims}"
     {:ok, socket
-              |> Guardian.Phoenix.Socket.assign_rtc(user, jwt, claims)
-              |> assign(:guardian_token, jwt)
-              |> assign(:user_id, user.id)
-              |> assign(:user, user )
+          |> assign(:guardian_token, token)
+          |> assign(:user_id, user.id)
+          |> assign(:user, user )
     }
   end
 
-  defp process_auth_resp({:error, :user_not_found}, sUID, socket) do
-    Logger.info "Can't authenticate user! #{inspect sUID} - user not found"
+  defp process_auth_resp({:error, reason}, socket) do
     {:ok, socket
-    |> assign(:user_id, 0)
-    |> assign(:login_error, sUID)}
+          |> assign(:user_id, 0)
+          |> assign(:login_error, reason)}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

@@ -6,14 +6,19 @@ defmodule Kun.Application do
   use Application
 
   def start(_type, _args) do
+    import Supervisor.Spec
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      Kun.Repo,
+      supervisor(Kun.Repo, []),
       # Start the endpoint when the application starts
-      KunWeb.Endpoint
-      # Starts a worker by calling: Kun.Worker.start_link(arg)
-      # {Kun.Worker, arg},
+      supervisor(KunWeb.Endpoint, []),
+      # Start your own worker by calling: Prater.Worker.start_link(arg1, arg2, arg3)
+      # worker(Prater.Worker, [arg1, arg2, arg3]),
+      #supervisor(KuniserverWeb.Presence, []),
+
+      supervisor(XRPL.PubSub, []),
+      supervisor(XRPL.Connection, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

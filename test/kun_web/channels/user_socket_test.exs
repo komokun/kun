@@ -14,13 +14,26 @@ defmodule KunserverWeb.RoomChannelTest do
   setup do
 
     user = create_user("")
-    {:ok, token, full_claims} = Kun.UserManager.Guardian.encode_and_sign(user)
+    #{:ok, token, full_claims} = Kun.UserManager.Guardian.encode_and_sign(user)
 
-    {:ok, socket} = connect(UserSocket, %{"token" => token})
+    #{:ok, socket} = connect(UserSocket, %{"token" => token})
 
-    {:ok, %{user: user, socket: socket}}
+    {:ok, %{user: user}}
   end
 
+  describe "User socket tests" do
+    test "socket authentication with valid token", %{user: user} do
+
+      {:ok, token, _} = UserManager.Guardian.encode_and_sign(user)
+      assert {:ok, socket} = connect(UserSocket, %{"token" => token})
+    end
+
+    test "socket authentication with user login", %{user: user} do
+      Logger.warn("User is : #{inspect user}")
+      assert {:ok, socket} = connect(UserSocket, %{"email" => user.email, "password" => "some password"})
+      assert socket.assigns.user_id == user.id
+    end
+  end
 
 
   defp create_user(_) do

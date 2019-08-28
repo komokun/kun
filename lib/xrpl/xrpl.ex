@@ -14,7 +14,7 @@ defmodule XRPL.Client do
   end
 
   def handle_frame({:text, msg}, state) do
-    Logger.info("Received Message: #{inspect msg}")
+    Logger.warn("Received Message: #{inspect msg}")
     Phoenix.PubSub.broadcast(:xrpl, "server_info", {:response, msg})
     {:ok, state}
   end

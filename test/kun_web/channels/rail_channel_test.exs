@@ -14,14 +14,27 @@ defmodule KunWeb.RailChannelTest do
     {:ok, _reply, socket} = subscribe_and_join(
       socket,
       KunWeb.RailChannel,
-      "login:"<> Integer.to_string(user.id),
+      "rail:"<> Integer.to_string(user.id),
       %{"name" => user.name})
 
-    ## to make sure we receive the :after_join with jwt token
     token = socket.assigns[:guardian_default_token]
-    Logger.info "Dump token: #{inspect token} ---------> #{inspect user}"
-    assert_push "user:guardian_token", %{guardian_token: token}
     {:ok, socket: socket, user: user, token: token }
+  end
+
+  test "pong replies with status ok", %{socket: socket} do
+    ref = push socket, "pong", %{"hello" => "there"}
+    assert_reply ref, :ok, %{message: "pong"}
+  end
+
+  test "Check rail_id assignment to the socket after join", %{socket: socket, user: user} do
+
+    assert socket.assigns.rail_id == Integer.to_string(user.id)
+  end
+
+  test ":xrpl test ripple server info", %{socket: socket} do
+    ref = push socket, :xrpl, %{"id" => 1, "command" => "server_info"}
+
+    assert_broadcast "ledger", %{"data" => _}, 1000
   end
 
   @create_attrs %{name: "some name", email: "some@email", password: "password"}
