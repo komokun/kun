@@ -34,7 +34,13 @@ defmodule KunWeb.RailChannelTest do
   test ":xrpl test ripple server info", %{socket: socket} do
     ref = push socket, :xrpl, %{"id" => 1, "command" => "server_info"}
 
-    assert_broadcast "ledger", %{"data" => _}, 1000
+    assert_broadcast "ledger", %{"data" => _}, 2000
+  end
+
+  test ":xrpl test ripple get account info", %{socket: socket} do
+    ref = push socket, :xrpl, %{"id" => 1, "command" => "account_info", "account" => ""}
+
+    assert_broadcast "ledger", %{"data" => _}, 2000
   end
 
   @create_attrs %{name: "some name", email: "some@email", password: "password"}

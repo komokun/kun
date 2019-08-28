@@ -12,7 +12,6 @@ defmodule XRPL.Ledger do
   end
 
   def init_ledger_transaction(pid, payload, socket) do
-    Logger.warn ""
     # Pass broadcast socket to Ledger process obtained from poolboy
     :gen_server.call(pid, {:transaction, socket, payload})
     # Start a call to Ledger connection socket client
@@ -20,12 +19,12 @@ defmodule XRPL.Ledger do
 
   def handle_call({:transaction, socket, payload}, _from, state) do
 
-    Logger.warn("Subscribing!")
-    Logger.warn("State in handle info  #{inspect state}")
+    #Logger.warn("Subscribing!")
+    #Logger.warn("State in handle info  #{inspect state}")
     Phoenix.PubSub.subscribe(:xrpl, "server_info")
 
     new_state = Map.put_new(state, "socket", socket)
-    Logger.warn("New State in handle info  #{inspect new_state}")
+    #Logger.warn("New State in handle info  #{inspect new_state}")
 
     :poolboy.transaction(:xrpl_connection_pool,
         fn(pid) -> send_to_xrpl(pid, payload) end)
@@ -34,7 +33,7 @@ defmodule XRPL.Ledger do
   end
 
   def handle_info({:response, msg}, state) do
-    Logger.warn("Pubsub from #{inspect self()} message #{msg} ")
+    #Logger.warn("Pubsub from #{inspect self()} message #{msg} ")
     #Logger.warn("Socket to send response to  #{inspect state.socket}")
     Phoenix.Channel.broadcast_from(state["socket"], "ledger", %{ "data" => msg })
     {:noreply, state}
@@ -47,7 +46,7 @@ defmodule XRPL.Ledger do
   end
 
   defp send_to_xrpl(pid, command) do
-    Logger.warn("Inside send_to_xrpl")
+    #Logger.warn("Inside send_to_xrpl")
     message = Poison.encode!(command)
     pid
     |> send_message(message)
@@ -55,7 +54,7 @@ defmodule XRPL.Ledger do
 
   @spec send_message(pid, String.t) :: :ok
   def send_message(pid, message) do
-    Logger.warn("Sending message: #{inspect message} to #{inspect pid}")
+    #Logger.warn("Sending message: #{inspect message} to #{inspect pid}")
     WebSockex.send_frame(pid, {:text, message})
   end
 

@@ -27,7 +27,7 @@ defmodule KunWeb.RailChannel do
   end
 
   def ledger(true, socket, payload) do
-    Logger.warn "#{inspect payload} WAS ALLOWED ...."
+    #Logger.warn "#{inspect payload} WAS ALLOWED ...."
     :poolboy.transaction(:xrp_ledger_pool,
       fn(pid) -> :gen_server.call(pid, {:transaction, socket, payload}) end)
 
@@ -44,7 +44,7 @@ defmodule KunWeb.RailChannel do
   end
 
   def response(true, socket, what) do
-    Logger.warn "#{inspect what} WAS ALLOWED ...."
+    #Logger.warn "#{inspect what} WAS ALLOWED ...."
     #user = Guardian.Phoenix.Socket.current_resource(socket)
     #Logger.warn "Current Resource for this token #{inspect user}"
 
